@@ -1,0 +1,44 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Drag-and-Drop Form Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Drag-and-Drop Form Editor</h1>
+        <div class="editor-wrapper">
+            <!-- Field Types Toolbar -->
+            <div id="field-types" class="field-types">
+                <h3>Field Types</h3>
+                <ul>
+                    <li data-type="text">Text Field</li>
+                    <li data-type="number">Number Field</li>
+                    <li data-type="date">Date Field</li>
+                    <li data-type="datetime">DateTime Field</li>
+                    <li data-type="boolean">Boolean Field</li>
+                    <li data-type="uri">URI Field</li>
+                    <li data-type="select">Select Field</li>
+                </ul>
+            </div>
+
+            <!-- Form Editor Area -->
+            <div id="form-editor-container">
+                <ul id="form-editor">
+                    <!-- Form fields will appear here -->
+                </ul>
+            </div>
+        </div>
+
+        <button id="generate-shacl" class="btn">Generate SHACL</button>
+
+        <h2>Generated SHACL Code:</h2>
+        <pre id="shacl-output"></pre>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
