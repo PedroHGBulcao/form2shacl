@@ -1,6 +1,115 @@
 <!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
+<script id="namespace-data" type="application/json">
+    {
+        "acl": "http://www.w3.org/ns/auth/acl#",
+        "cc": "http://creativecommons.org/ns#",
+        "cert": "http://www.w3.org/ns/auth/cert#",
+        "cnt": "http://www.w3.org/2011/content#",
+        "constant": "http://qudt.org/vocab/constant/",
+        "crm": "http://www.cidoc-crm.org/cidoc-crm/",
+        "csvw": "http://www.w3.org/ns/csvw#",
+        "ctag": "http://commontag.org/ns#",
+        "dash": "http://datashapes.org/dash#",
+        "dbo": "http://dbpedia.org/ontology/",
+        "dc11": "http://purl.org/dc/elements/1.1/",
+        "dcam": "http://purl.org/dc/dcam/",
+        "dcmitype": "http://purl.org/dc/dcmitype/",
+        "dcat": "http://www.w3.org/ns/dcat#",
+        "dcterms": "http://purl.org/dc/terms/",
+        "discipline": "http://qudt.org/vocab/discipline/",
+        "dig": "http://www.ics.forth.gr/isl/CRMdig/",
+        "doap": "http://usefulinc.com/ns/doap#",
+        "dqv": "http://www.w3.org/ns/dqv#",
+        "dpv": "http://www.w3.org/ns/dpv#",
+        "dtype": "http://www.linkedmodel.org/schema/dtype#",
+        "earl": "http://www.w3.org/ns/earl#",
+        "duv": "http://www.w3.org/ns/duv#",
+        "ebucore": "http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#",
+        "exif": "http://www.w3.org/2003/12/exif/ns#",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "frbr": "http://purl.org/vocab/frbr/core#",
+        "geo": "http://www.opengis.net/ont/geosparql#",
+        "geof": "http://www.opengis.net/def/function/geosparql/",
+        "geor": "http://www.opengis.net/def/rule/geosparql/",
+        "gml": "http://www.opengis.net/ont/gml#",
+        "gn": "http://www.geonames.org/ontology#",
+        "gr": "http://purl.org/goodrelations/v1#",
+        "grddl": "http://www.w3.org/2003/g/data-view#",
+        "gs1": "https://gs1.org/voc/",
+        "gtfs": "http://vocab.gtfs.org/terms#",
+        "hydra": "http://www.w3.org/ns/hydra/core#",
+        "ical": "http://www.w3.org/2002/12/cal/icaltzd#",
+        "http": "http://www.w3.org/2011/http#",
+        "la": "https://linked.art/ns/terms/",
+        "ldp": "http://www.w3.org/ns/ldp#",
+        "list": "http://www.w3.org/2000/10/swap/list#",
+        "locn": "http://www.w3.org/ns/locn#",
+        "log": "http://www.w3.org/2000/10/swap/log#",
+        "lvont": "http://lexvo.org/ontology#",
+        "m4i": "http://w3id.org/nfdi4ing/metadata4ing#",
+        "ma": "http://www.w3.org/ns/ma-ont#",
+        "mads": "http://www.loc.gov/mads/rdf/v1#",
+        "math": "http://www.w3.org/2000/10/swap/math#",
+        "oa": "http://www.w3.org/ns/oa#",
+        "og": "http://ogp.me/ns#",
+        "oidc": "http://www.w3.org/ns/solid/oidc#",
+        "org": "http://www.w3.org/ns/org#",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "pim": "http://www.w3.org/ns/pim/space#",
+        "prefix": "http://qudt.org/vocab/prefix/",
+        "prov": "http://www.w3.org/ns/prov#",
+        "qb": "http://purl.org/linked-data/cube#",
+        "quantitykind": "http://qudt.org/vocab/quantitykind/",
+        "qkdv": "http://qudt.org/vocab/dimensionvector/",
+        "qudt": "http://qudt.org/schema/qudt/",
+        "rdau": "http://rdaregistry.info/Elements/u/",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfa": "http://www.w3.org/ns/rdfa#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "rev": "http://purl.org/stuff/rev#",
+        "rico": "https://www.ica.org/standards/RiC/ontology#",
+        "rr": "http://www.w3.org/ns/r2rml#",
+        "rif": "http://www.w3.org/2007/rif#",
+        "rss": "http://purl.org/rss/1.0/",
+        "schema": "http://schema.org/",
+        "sd": "http://www.w3.org/ns/sparql-service-description#",
+        "sdmx": "http://purl.org/linked-data/sdmx#",
+        "sem": "http://semanticweb.cs.vu.nl/2009/11/sem/",
+        "set": "http://www.w3.org/2000/10/swap/set#",
+        "sf": "http://www.opengis.net/ont/sf#",
+        "sh": "http://www.w3.org/ns/shacl#",
+        "shex": "http://www.w3.org/ns/shex#",
+        "shsh": "https://www.w3.org/ns/shacl-shacl#",
+        "sioc": "http://rdfs.org/sioc/ns#",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "skosxl": "http://www.w3.org/2008/05/skos-xl#",
+        "solid": "http://www.w3.org/ns/solid/terms#",
+        "sosa": "http://www.w3.org/ns/sosa/",
+        "sou": "http://qudt.org/vocab/sou/",
+        "ssn": "http://www.w3.org/ns/ssn/",
+        "stat": "http://www.w3.org/ns/posix/stat#",
+        "string": "http://www.w3.org/2000/10/swap/string#",
+        "test": "http://www.w3.org/2006/03/test-description#",
+        "time": "http://www.w3.org/2006/time#",
+        "unit": "http://qudt.org/vocab/unit/",
+        "vaem": "http://www.linkedmodel.org/schema/vaem#",
+        "vann": "http://purl.org/vocab/vann/",
+        "vcard": "http://www.w3.org/2006/vcard/ns#",
+        "vs": "http://www.w3.org/2003/06/sw-vocab-status/ns#",
+        "wdr": "http://www.w3.org/2007/05/powder#",
+        "wdrs": "http://www.w3.org/2007/05/powder-s#",
+        "wgs": "http://www.w3.org/2003/01/geo/wgs84_pos#",
+        "xkos": "http://rdf-vocabulary.ddialliance.org/xkos#",
+        "xhv": "http://www.w3.org/1999/xhtml/vocab#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "as": "https://www.w3.org/ns/activitystreams#",
+        "bibo": "http://purl.org/ontology/bibo/",
+        "v": "http://rdf.data-vocabulary.org/#",
+        "xml": "http://www.w3.org/XML/1998/namespace/"
+    }
+</script>
 <head>
     <meta charset="UTF-8">
     <title>Drag-and-Drop Form Editor</title>
@@ -15,13 +124,14 @@
             <div id="field-types" class="field-types">
                 <h3>Field Types</h3>
                 <ul>
-                    <li data-type="text">Text Field</li>
-                    <li data-type="number">Number Field</li>
-                    <li data-type="date">Date Field</li>
-                    <li data-type="datetime">DateTime Field</li>
-                    <li data-type="boolean">Boolean Field</li>
-                    <li data-type="uri">URI Field</li>
-                    <li data-type="select">Select Field</li>
+                    <li data-type="text">📝 Text Field</li>
+                    <li data-type="number">🔢 Number Field</li>
+                    <li data-type="date">📅 Date Field</li>
+                    <li data-type="datetime">⏰ DateTime Field</li>
+                    <li data-type="boolean">✅ Boolean Field</li>
+                    <li data-type="uri">🌐 URI Field</li>
+                    <li data-type="select">🔽 Select Field</li>
+                    <li data-type="group">📂 Group</li>
                 </ul>
             </div>
 
@@ -30,6 +140,20 @@
                 <ul id="form-editor">
                     <!-- Form fields will appear here -->
                 </ul>
+            </div>
+        </div>
+
+        <div id="namespace-tab">
+            <h3>Namespaces</h3>
+            <ul id="namespace-list">
+                
+            </ul>
+            <hr />
+            <!-- Add custom namespace -->
+            <div id="namespace-add">
+                <input type="text" id="namespace-prefix" placeholder="Prefix (e.g., ex)" />
+                <input type="text" id="namespace-uri" placeholder="URI (e.g., http://example.com#)" />
+                <button id="add-namespace">Add</button>
             </div>
         </div>
 

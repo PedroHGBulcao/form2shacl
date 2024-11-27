@@ -91,9 +91,16 @@ h1 {
 }
 
 .field-title:empty:before {
-    content: "Click to edit"; /* Placeholder hint */
+    content: "Enter field name"; /* Placeholder hint */
     color: #aaa;  /* Light gray color for the placeholder text */
     font-style: italic;
+}
+
+.title-prewrapper {
+    display: flex;
+    justify-content: start; /* Align title on the left, buttons on the right */
+    align-items: center; /* Vertically center the content */
+    width: 100%;
 }
 
 .title-wrapper {
@@ -101,6 +108,12 @@ h1 {
     justify-content: space-between; /* Align title on the left, buttons on the right */
     align-items: center; /* Vertically center the content */
     width: 100%;
+}
+
+/* Styling for the field icon */
+.field-icon {
+    font-size: 16px;
+    padding: 5px;
 }
 
 /* Wrapper for the globe, cog, and delete icons */
@@ -222,4 +235,152 @@ pre {
 .uri-repo-list li {
     padding: 5px;
     cursor: pointer;
+}
+
+/* Styling for the delete icon */
+.delete-icon {
+    cursor: pointer;
+    color: red;
+    font-size: 16px;
+    padding: 5px;
+    margin-left: 5px;
+    float: right;
+}
+
+.input-wrapper {
+    display: block;
+    justify-content: space-between; /* Align title on the left, buttons on the right */
+    align-items: center; /* Vertically center the content */
+    width: 100%;
+}
+
+/* Group wrapper styling */
+.header-wrapper {
+    display: flex;
+    justify-content: space-between; /* Align title on the left, buttons on the right */
+    align-items: center; /* Vertically center the content */
+    width: 100%;
+}
+
+/* Group wrapper styling */
+.group-wrapper {
+    border: 1px solid #007bff;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f0f8ff;
+    border-radius: 5px;
+    position: relative;
+    cursor: move;
+}
+
+/* Label input for group name */
+.group-label, .group-uri {
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    padding: 5px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Styling for the group drop area */
+.group-drop-area {
+    border: 2px dashed #007bff;
+    padding: 10px;
+    background-color: #e9f5ff;
+    min-height: 50px;
+}
+
+#namespace-tab {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #f9f9f9;
+    border-left: 2px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+#namespace-tab h3 {
+    text-align: center;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+#namespace-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.namespace-item {
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    background-color: #e9ecef;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.namespace-item.selected {
+    background-color: #007bff;
+    color: white;
+}
+
+#namespace-add {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+#namespace-add input {
+    margin-bottom: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#namespace-add button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#namespace-add button:hover {
+    background-color: #0056b3;
+}
+
+.namespace-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.namespace-buttons .edit-namespace,
+.namespace-buttons .delete-namespace {
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.namespace-buttons .edit-namespace {
+    color: #007bff;
+}
+
+.namespace-buttons .delete-namespace {
+    color: red;
+}
+
+.namespace-item.selected {
+    background-color: #007bff;
+    color: white;
 }
