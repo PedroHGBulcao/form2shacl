@@ -139,8 +139,7 @@ function createFormField(fieldType) {
     const globeIcon = document.createElement('span');
     globeIcon.classList.add('globe-icon');
     globeIcon.innerHTML = '🌐';
-    globeIcon.addEventListener('click', () => openURISearchModal(fieldType, title));
-
+    
     // ⚙️ Cog Icon
     const cogIcon = document.createElement('span');
     cogIcon.classList.add('cog-icon');
@@ -294,7 +293,6 @@ document.addEventListener('change', function (e) {
     }
 });
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const namespaceList = document.getElementById("namespace-list");
     const addNamespaceButton = document.getElementById("add-namespace");
@@ -435,45 +433,169 @@ function toggleSettingsMenu(fieldWrapper) {
     }
 }
 
-function openURISearchModal(fieldType, titleElement) {
-    const modal = document.createElement('div');
-    modal.classList.add('uri-modal');
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("ontology-modal");
+    const closeModal = document.querySelector(".close-modal");
+    const searchInput = document.getElementById("ontology-search-input");
+    const resultsContainer = document.getElementById("ontology-results");
+    const loadingSpinner = document.getElementById("loading-spinner");
 
-    const modalContent = `
-        <div class="uri-modal-content">
-            <div class="uri-modal-header">
-                <h2>Select URI for ${fieldType}</h2>
-                <span class="uri-modal-close">×</span>
-            </div>
-            <ul class="uri-repo-list">
-                <li data-uri="http://www.w3.org/2001/XMLSchema#">XSD (XML Schema)</li>
-                <li data-uri="http://purl.org/pav/">PAV (Provenance, Authoring, Versioning)</li>
-                <li data-uri="http://purl.org/ontology/bibo/">BIBO (Bibliographic Ontology)</li>
-                <li data-uri="http://purl.org/dc/terms/">DCT (Dublin Core Terms)</li>
-                <li data-uri="http://open-services.net/ns/core#">OSLC (Open Services for Lifecycle Collaboration)</li>
-                <li data-uri="http://schema.org/">Schema.org</li>
-                <li data-uri="http://www.w3.org/2004/02/skos/core#">SKOS (Simple Knowledge Organization System)</li>
-            </ul>
-        </div>
-    `;
+    let currentFieldWrapper = null; // Track the current field wrapper for updating its URI
 
-    modal.innerHTML = modalContent;
-    document.body.appendChild(modal);
-
-    modal.querySelector('.uri-modal-close').addEventListener('click', () => {
-        modal.remove(); // Close the modal
+    // Open modal when globe button is clicked
+    document.addEventListener("click", (event) => {
+        if (event.target.classList.contains("globe-icon")) {
+            currentFieldWrapper = event.target.closest(".field-wrapper");
+            modal.style.display = "block";
+        }
     });
 
-    modal.querySelectorAll('.uri-repo-list li').forEach(item => {
-        item.addEventListener('click', () => {
-            const uri = item.getAttribute('data-uri');
-            titleElement.innerText = uri; // Set the title to the selected URI
-            modal.remove(); // Close the modal
+    // Close modal
+    closeModal.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    // Close modal when clicking outside the content
+    window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    // Search LOV API
+    searchInput.addEventListener("input", async () => {
+        const query = searchInput.value.trim();
+        resultsContainer.innerHTML = ""; // Clear previous results
+
+        if (query.length > 2) {
+            loadingSpinner.style.display = "block"; // Show loading spinner
+            const apiUrl = `https://lov.linkeddata.es/dataset/lov/api/v2/term/search?q=${encodeURIComponent(
+                query
+            )}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    loadingSpinner.style.display = "none"; // Hide loading spinner
+
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach((result) => {
+                            const conceptElement = document.createElement("div");
+                            conceptElement.classList.add("ontology-result");
+
+                            const clickableURI = document.createElement("a");
+                            clickableURI.href = result.uri;
+                            clickableURI.textContent = result.uri;
+                            clickableURI.target = "_blank";
+                            clickableURI.style.marginLeft = "5px";
+                            
+                            conceptElement.textContent = `${result.prefixedName}`;
+                            conceptElement.dataset.prefix = result.prefixedName.toString().split(":")[0]; // Extract prefix
+                            conceptElement.dataset.concept = result.prefixedName.toString().split(":")[1]; // Extract concept
+                            conceptElement.dataset.uri = result.uri;
+                            
+                            conceptElement.appendChild(clickableURI);
+                            resultsContainer.appendChild(conceptElement);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = "<p>No results found.</p>";
+                    }
+                } else {
+                    loadingSpinner.style.display = "none"; // Hide loading spinner
+                    resultsContainer.innerHTML = "<p>Error fetching results.</p>";
+                }
+            } catch (error) {
+                console.error("Error fetching data from LOV API:", error);
+                loadingSpinner.style.display = "none"; // Hide loading spinner
+                resultsContainer.innerHTML = "<p>Error fetching results.</p>";
+            }
+        }
+    });
+
+    // Handle selection of a concept
+    resultsContainer.addEventListener("click", (event) => {
+        if (event.target.classList.contains("ontology-result")) {
+            const selectedPrefix = event.target.dataset.prefix;
+            const selectedConcept = event.target.dataset.prefix + ":" + event.target.dataset.concept;
+            const selectedURI = event.target.dataset.uri;
+
+            // 1. Open the settings menu of the selected field
+            if (currentFieldWrapper) {
+                const settingsMenu = currentFieldWrapper.querySelector(".settings-menu");
+                if (settingsMenu && (settingsMenu.style.display === 'none' || !settingsMenu.style.display)) settingsMenu.style.display = 'block';
+
+                // 2. Add the clicked result to the URI field in the cog menu
+                const uriInput = settingsMenu.querySelector("input[name='uri-path']");
+                if (uriInput) {
+                    uriInput.value = selectedConcept;
+                }
+            }
+
+            // 3. Add the prefix to the selected namespaces on the tab
+            const namespaceList = document.getElementById("namespace-list");
+            const existingNamespace = document.querySelector(
+                `.namespace-item[data-prefix="${selectedPrefix}"]`
+            );
+
+            if (!existingNamespace) {
+                // Add the namespace if it doesn't already exist
+                addNamespaceToTab(selectedPrefix, selectedURI, true);
+            } else {
+                // Ensure it's selected if it already exists
+                existingNamespace.classList.add("selected");
+                sortNamespaces();
+            }
+
+            // Close the modal
+            modal.style.display = "none";
+        }
+    });
+
+    // Function to add a namespace to the tab
+    function addNamespaceToTab(prefix, uri, isSelected = false) {
+        const namespaceItem = document.createElement("li");
+        namespaceItem.classList.add("namespace-item");
+        if (isSelected) {
+            namespaceItem.classList.add("selected");
+        }
+        namespaceItem.setAttribute("data-prefix", prefix);
+        namespaceItem.setAttribute("data-uri", uri);
+        namespaceItem.innerHTML = `
+            ${prefix}
+            <span class="namespace-buttons">
+                <span class="edit-namespace">⚙️</span>
+                <span class="delete-namespace">❌</span>
+            </span>
+        `;
+        document.getElementById("namespace-list").appendChild(namespaceItem);
+        sortNamespaces();
+    }
+
+    // Function to sort namespaces
+    function sortNamespaces() {
+        const namespaceList = document.getElementById("namespace-list");
+        const items = Array.from(namespaceList.children);
+        const selectedItems = items.filter((item) => item.classList.contains("selected"));
+        const unselectedItems = items.filter((item) => !item.classList.contains("selected"));
+
+        // Sort each group alphabetically by prefix
+        selectedItems.sort((a, b) => {
+            const prefixA = a.getAttribute("data-prefix").toLowerCase();
+            const prefixB = b.getAttribute("data-prefix").toLowerCase();
+            return prefixA.localeCompare(prefixB);
         });
-    });
 
-    modal.style.display = 'block'; // Show the modal
-}
+        unselectedItems.sort((a, b) => {
+            const prefixA = a.getAttribute("data-prefix").toLowerCase();
+            const prefixB = b.getAttribute("data-prefix").toLowerCase();
+            return prefixA.localeCompare(prefixB);
+        });
+
+        // Append selected first, then unselected
+        [...selectedItems, ...unselectedItems].forEach((item) => namespaceList.appendChild(item));
+    }
+});
 
 function parseUri(text){
     return /[^:\n\r]+:[^:\n\r]+/.test(text) ? text : `<${text}>`;
@@ -509,7 +631,6 @@ document.getElementById('generate-shacl').addEventListener('click', function() {
         // Determine the appropriate datatype based on the field type
         switch (fieldType) {
             case 'text':
-                console.log(fieldWrapper.getAttribute("unique-id"));
                 const uniqueId = fieldWrapper.getAttribute("unique-id");
                 const textType = fieldWrapper.querySelector(`input[name="dash-type-${uniqueId}"]:checked`).value;
                 if (textType === "rich-text") datatype = 'rdf:HTML';
@@ -662,7 +783,6 @@ document.getElementById('generate-shacl').addEventListener('click', function() {
         // Handle groups
         let fieldParentElement = fieldWrapper.parentElement.parentElement;
         if (fieldParentElement.className === "group-wrapper"){
-            console.log(fieldParentElement.innerHTML);
             groupUri = fieldParentElement.querySelector('input[name="group-uri"]').value;
             shaclCode += `        sh:group ${parseUri(groupUri)} ;\n`;
         }
@@ -678,7 +798,6 @@ document.getElementById('generate-shacl').addEventListener('click', function() {
     
     const groups = document.querySelectorAll('#form-editor .group-wrapper');
     if (groups.length) groups.forEach((groupWrapper, index) => {
-        console.log(groupWrapper.innerHTML);
         const inputsMenu = groupWrapper.querySelector('.input-wrapper');
         const groupUri = inputsMenu.querySelector('input[name="group-uri"]').value;
         const groupLabel = inputsMenu.querySelector('input[name="group-label"]').value;

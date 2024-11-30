@@ -143,25 +143,39 @@
             </div>
         </div>
 
-        <div id="namespace-tab">
-            <h3>Namespaces</h3>
-            <ul id="namespace-list">
-                
-            </ul>
-            <hr />
-            <!-- Add custom namespace -->
-            <div id="namespace-add">
-                <input type="text" id="namespace-prefix" placeholder="Prefix (e.g., ex)" />
-                <input type="text" id="namespace-uri" placeholder="URI (e.g., http://example.com#)" />
-                <button id="add-namespace">Add</button>
-            </div>
-        </div>
-
         <button id="generate-shacl" class="btn">Generate SHACL</button>
 
         <h2>Generated SHACL Code:</h2>
         <pre id="shacl-output"></pre>
+    </div> 
+
+    <div id="namespace-container">
+        <div id="namespace-tab">
+            <h3>Namespaces</h3>
+            <ul id="namespace-list">
+                <!-- Namespace items will be dynamically added here -->
+            </ul>
+        </div>
+        <div id="namespace-add">
+            <input type="text" id="namespace-prefix" placeholder="Prefix (e.g., ex)" />
+            <input type="text" id="namespace-uri" placeholder="URI (e.g., http://example.com#)" />
+            <button id="add-namespace">Add</button>
+        </div>
     </div>
+
+    <div id="ontology-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Search Ontologies</h2>
+            <input type="text" id="ontology-search-input" placeholder="Search for a concept..." />
+            <div id="loading-spinner" style="display: none;">
+                <img src="loading.gif" alt="Loading..." />
+            </div>
+            <div id="ontology-results"></div>
+        </div>
+    </div>
+
+
 
     <script src="js/script.js"></script>
 </body>

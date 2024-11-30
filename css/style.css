@@ -293,15 +293,25 @@ pre {
     min-height: 50px;
 }
 
-#namespace-tab {
+#namespace-container {
     position: fixed;
-    right: 0;
+    left: 0;
     top: 0;
     width: 200px;
     height: 100%;
     background-color: #f9f9f9;
+}
+
+#namespace-tab {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    background-color: #f9f9f9;
     border-left: 2px solid #ccc;
     padding: 10px;
+    top: 0;
+    bottom: 121px;
+    position: absolute;
     overflow-y: auto;
 }
 
@@ -335,9 +345,17 @@ pre {
 }
 
 #namespace-add {
-    margin-top: 20px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: #f1f1f1;
+    border-top: 1px solid #ccc;
+    padding: 10px;
+    height: 100px;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    gap: 5px;
 }
 
 #namespace-add input {
@@ -383,4 +401,59 @@ pre {
 .namespace-item.selected {
     background-color: #007bff;
     color: white;
+}
+
+/* Modal styling */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 5px;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#ontology-search-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+#ontology-results {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+}
+
+#loading-spinner {
+    text-align: center;
+    margin: 20px 0;
+}
+#loading-spinner img {
+    width: 50px;
+    height: 50px;
 }
