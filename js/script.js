@@ -23,18 +23,22 @@ new Sortable(document.getElementById('form-editor'), {
     draggable: '.group-wrapper, .field-wrapper',
     onAdd: function (evt) {
         // Get the type of field being added
+        const oldFieldWrapper = evt.item;
+        const isNewField = !oldFieldWrapper.hasAttribute("unique-id");
         const fieldType = evt.item.getAttribute('data-type');
         if (fieldType === "group") {
             const fieldWrapper = createGroupElement();
             evt.item.parentNode.replaceChild(fieldWrapper, evt.item);
         }
         else if (fieldType) {
-            const fieldWrapper = createFormField(fieldType);
+            const fieldData = isNewField ? {} : serializeFieldData(oldFieldWrapper);
+            const fieldWrapper = createFormField(fieldType, fieldData);
             evt.item.parentNode.replaceChild(fieldWrapper, evt.item);
         }
     }
 });
 
+// Groups
 function createGroupElement() {
     const groupWrapper = document.createElement("div");
     groupWrapper.classList.add("group-wrapper");
@@ -88,9 +92,12 @@ function createGroupElement() {
         ghostClass: 'ghost',
         filter: 'field-wrapper',
         onAdd: function (event) {
+            const oldFieldWrapper = event.item;
+            const isNewField = !oldFieldWrapper.hasAttribute("unique-id");
             const fieldType = event.item.getAttribute("data-type");
             if (fieldType != "group"){
-                const fieldElement = createFormField(fieldType);
+                const fieldData = isNewField ? {} : serializeFieldData(oldFieldWrapper);
+                const fieldElement = createFormField(fieldType, fieldData);
                 dropArea.replaceChild(fieldElement, event.item);
             }
             else event.item.remove(); // Remove the original placeholder item
@@ -100,8 +107,37 @@ function createGroupElement() {
     return groupWrapper;
 }
 
+// Extract field data
+function serializeFieldData(fieldWrapper) {
+    const fieldType = fieldWrapper.getAttribute("data-type");
+    const uniqueId = fieldWrapper.getAttribute("unique-id");
+    const configStatus = fieldWrapper.querySelector(".settings-menu").style.display;
+    const fieldData = {
+        type: fieldType,
+        uniqueId: uniqueId,
+        title: fieldWrapper.querySelector(".field-title").innerText.trim(),
+        configStatus : configStatus,
+        inputs: {}
+    };
+
+    // Extract inputs and their values
+    const settingsMenu = fieldWrapper.querySelector(".settings-menu");
+    if (settingsMenu) {
+        const inputs = settingsMenu.querySelectorAll("input, select");
+        inputs.forEach(input => {
+            if (input.type === "checkbox") fieldData.inputs[input.name] = input.checked;
+            else if (input.type === "radio"){
+                if (input.checked) fieldData.inputs[input.name] = input.value;
+            }
+            else fieldData.inputs[input.name] = input.value;
+        });
+    }
+
+    return fieldData;
+}
+
 // Function to create a form field element with editable title, cog icon, and delete icon
-function createFormField(fieldType) {
+function createFormField(fieldType, fieldData = {}) {
     const fieldWrapper = document.createElement('li');
     fieldWrapper.setAttribute('data-type', fieldType);
     fieldWrapper.classList.add("field-wrapper");
@@ -111,7 +147,7 @@ function createFormField(fieldType) {
     titlePrewrapper.classList.add('title-prewrapper'); // Use flex to align title and buttons in one line
     titleWrapper.classList.add('title-wrapper'); // Use flex to align title and buttons in one line
 
-    const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const uniqueId = fieldData.uniqueId || `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     fieldWrapper.setAttribute("unique-id", uniqueId);    
 
     // Field Icon
@@ -131,6 +167,7 @@ function createFormField(fieldType) {
     const title = document.createElement('div');
     title.classList.add('field-title');
     title.contentEditable = true;
+    title.innerText = fieldData.title || "";
 
     const buttonWrapper = document.createElement('div');
     buttonWrapper.classList.add('button-wrapper'); // Wrapper for the globe, cog, and delete icons
@@ -160,6 +197,27 @@ function createFormField(fieldType) {
     const settingsMenu = document.createElement('div');
     settingsMenu.classList.add('settings-menu');
     settingsMenu.innerHTML = generateSettingsMenu(fieldType, uniqueId);
+    settingsMenu.style.display = fieldData.configStatus || "none";
+
+    // Populate inputs with fieldData
+    Object.entries(fieldData.inputs || {}).forEach(([key, value]) => {
+        const input = settingsMenu.querySelector(`[name="${key}"]`);
+        if (input) {
+            if (input.type === "checkbox") {
+                input.checked = value;
+            }
+            else if (input.type === "radio"){
+                const radioOptions = settingsMenu.querySelectorAll(`[name="${key}"]`);
+                radioOptions.forEach((radioOption) => {if(radioOption.value === value) radioOption.checked = true;});
+                handleRadioVisibility(settingsMenu.querySelector(`[name="${key}"]:checked`));
+            }
+            else {
+                input.value = value;
+            }
+        }
+    });
+
+    if (fieldType === "text") handleMultifieldCheck(settingsMenu.querySelector(`[name="multifield"]`));
 
     // Append title and button icons to the titleWrapper
     titlePrewrapper.appendChild(fieldIcon);
@@ -268,31 +326,40 @@ function generateSettingsMenu(fieldType, uniqueId) {
 
 // Handle visibility of radio input field options
 document.addEventListener('change', function (e) {
-    if (e.target.type === 'radio') {
-        const checked = document.querySelector(`input[name="${e.target.name}"]:checked`).value;
+    handleRadioVisibility(e.target);
+});
+
+function handleRadioVisibility(tgt){
+    if (tgt.type === 'radio') {
+        const checked = document.querySelector(`input[name="${tgt.name}"]:checked`).value;
         if (checked === "list" || checked === "instance-of"){
-            const customListOption = e.target.closest('.settings-menu').querySelector('#custom-list');
+            const customListOption = tgt.closest('.settings-menu').querySelector('#custom-list');
             customListOption.style.display = checked === "list" ? 'block' : 'none';
-            const instanceOfOption = e.target.closest('.settings-menu').querySelector('#instance-of-uri');
+            const instanceOfOption = tgt.closest('.settings-menu').querySelector('#instance-of-uri');
             instanceOfOption.style.display = checked === "instance-of" ? 'block' : 'none';
         }
         else {
-            const languageOption = e.target.closest('.settings-menu').querySelector('#hidden-language');
+            const languageOption = tgt.closest('.settings-menu').querySelector('#hidden-language');
             languageOption.style.display = (checked === "standard" || checked === "multiline") ? 'block' : 'none';
-            const autocompleteOption = e.target.closest('.settings-menu').querySelector('#hidden-autocomplete');
+            const autocompleteOption = tgt.closest('.settings-menu').querySelector('#hidden-autocomplete');
             autocompleteOption.style.display = checked === "autocomplete" ? 'block' : 'none';
         }
     }
-});
+}
 
 // Handle visibility of min/max count inputs when "Multifield?" is checked
 document.addEventListener('change', function (e) {
-    if (e.target.name === 'multifield') {
-        const multifieldOptions = e.target.closest('.settings-menu').querySelector('#multifield-options');
-        multifieldOptions.style.display = e.target.checked ? 'block' : 'none';
-    }
+    handleMultifieldCheck(e.target);
 });
 
+function handleMultifieldCheck(tgt){
+    if (tgt.name === 'multifield') {
+        const multifieldOptions = tgt.closest('.settings-menu').querySelector('#multifield-options');
+        multifieldOptions.style.display = tgt.checked ? 'block' : 'none';
+    }
+}
+
+// Namespace tab
 document.addEventListener("DOMContentLoaded", () => {
     const namespaceList = document.getElementById("namespace-list");
     const addNamespaceButton = document.getElementById("add-namespace");
@@ -304,7 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const preSelectedPrefixes = ["rdf", "xsd", "sh", "dash", "dcat", "rdfs"]; // Pre-selected namespaces
     for (const [prefix, uri] of Object.entries(namespaceData)) {
         const isSelected = preSelectedPrefixes.includes(prefix);
-        addNamespaceToTab(prefix, uri, isSelected);
+        addNamespaceToTab(prefix, uri, isSelected, true);
     }
 
     // Add a custom namespace or replace an existing one
@@ -380,7 +447,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Function to add a namespace to the tab
-    function addNamespaceToTab(prefix, uri, isSelected = false) {
+    function addNamespaceToTab(prefix, uri, isSelected = false, isFirstLoad = false) {
         const namespaceItem = document.createElement("li");
         namespaceItem.classList.add("namespace-item");
         if (isSelected) {
@@ -396,6 +463,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </span>
         `;
         namespaceList.appendChild(namespaceItem);
+        if (!isFirstLoad) namespaceItem.classList.toggle("selected");
         sortNamespaces(); // Sort namespaces immediately after adding
     }
 
@@ -433,6 +501,7 @@ function toggleSettingsMenu(fieldWrapper) {
     }
 }
 
+// Ontology modal
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("ontology-modal");
     const closeModal = document.querySelector(".close-modal");
@@ -595,6 +664,32 @@ document.addEventListener("DOMContentLoaded", () => {
         // Append selected first, then unselected
         [...selectedItems, ...unselectedItems].forEach((item) => namespaceList.appendChild(item));
     }
+});
+
+// Namespace tab toggle
+document.addEventListener("DOMContentLoaded", () => {
+    const namespaceContainer = document.getElementById("namespace-container");
+    const namespaceToggle = document.getElementById("namespace-toggle");
+    const toggleButton = document.getElementById("namespace-toggle");
+
+    // Initial state
+    let isTabVisible = true;
+
+    // Toggle visibility of the namespace tab
+    toggleButton.addEventListener("click", () => {
+        isTabVisible = !isTabVisible;
+
+        // Toggle the hidden class and button text
+        if (isTabVisible) {
+            namespaceContainer.classList.remove("hidden");
+            namespaceToggle.classList.remove("hidden");
+            toggleButton.firstChild.src = "left.png";
+        } else {
+            namespaceContainer.classList.add("hidden");
+            namespaceToggle.classList.add("hidden");
+            toggleButton.firstChild.src = "right.png";
+        }
+    });
 });
 
 function parseUri(text){
